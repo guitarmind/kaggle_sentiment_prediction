@@ -16,8 +16,8 @@ public class SentimentManager {
 	public static void main(String args[]) {
 		String swnFilePath = "E:/SentiWordNet_3.0.0/SentiWordNet_3.0.0_20130122.txt";
 		SentimentManager.instance(swnFilePath);
-		System.out
-				.println(SentimentManager.instance(swnFilePath).lookup("sad"));
+		System.out.println(SentimentManager.instance(swnFilePath)
+				.lookup("Mojo"));
 	}
 
 	// Sentiment value lookup

@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.Vector;
 
 public class SWN3 {
-	private String pathToSWN = "C:\\Users\\MyName\\Desktop\\SentiWordNet_3.0.0\\home\\swn\\www\\admin\\dump\\SentiWordNet_3.0.0.txt";
+	private String pathToSWN = "E:/SentiWordNet_3.0.0/SentiWordNet_3.0.0_20130122.txt";
 	private HashMap<String, Double> _dict;
 
 	public SWN3() {
