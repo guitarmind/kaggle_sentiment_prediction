@@ -18,10 +18,12 @@ public class SentimentPrediction {
 
 		long startTime = Calendar.getInstance().getTimeInMillis();
 
-		Hashtable<Integer, TrainingDataEntry> train = parser
-				.getTrainingData("train.tsv");
+		// Hashtable<Integer, TrainingDataEntry> train = parser
+		// .getTrainingData("train.tsv");
 		// Hashtable<Integer, TrainingDataEntry> train = parser
 		// .getTrainingData("train_small_1000.tsv");
+		Hashtable<Integer, TrainingDataEntry> train = parser
+				.getTrainingData("train_small_10000.tsv");
 		int matchedCount = 0;
 		int totalCount = 0;
 		for (Integer phraseId : train.keySet()) {
@@ -35,6 +37,7 @@ public class SentimentPrediction {
 			int predictedSentiment = 0;
 			double sumSentiment = sentiwordNet.findSumSentiment(phrase);
 
+			int ngramCount = 0;
 			StringTokenizer tokenizer = new StringTokenizer(phrase);
 			while (tokenizer.hasMoreTokens()) {
 				String token = tokenizer.nextToken().trim();
@@ -46,37 +49,35 @@ public class SentimentPrediction {
 						// reverse the sentiment due to negation
 						sumSentiment = sumSentiment * -1;
 					}
+
+					ngramCount++;
 				}
 			}
 
-			if (sumSentiment == 0)
-				predictedSentiment = 2;
-			else if (sumSentiment >= 0.75)
-				predictedSentiment = 4;
-			else if (sumSentiment < 0.75 && sumSentiment > 0.25)
-				// positive
-				predictedSentiment = 3;
-			else if (sumSentiment <= 0.25 && sumSentiment >= -0.25)
-				// neutral
-				predictedSentiment = 2;
-			else if (sumSentiment < -0.25 && sumSentiment >= -0.75)
-				// somewhat negative
-				predictedSentiment = 1;
-			else if (sumSentiment < -0.75)
-				// negative
-				predictedSentiment = 0;
+			if (ngramCount <= 5) {
+				if ((sumSentiment > 0 && sumSentiment <= 0.5)
+						|| (sumSentiment < 0 && sumSentiment >= -0.5))
+					predictedSentiment = 2;
+			}
 
-			// log.append("Expected sentiment type:" + expectedSentiment +
-			// "\n");
-			// // System.out.println("Expected sentiment type:" +
-			// // expectedSentiment);
-			// log.append("Predicted sentiment score:" + sumSentiment + "\n");
-			// // System.out.println("Predicted sentiment score:" +
-			// sumSentiment);
-			// log.append("Predicted sentiment type:" + predictedSentiment
-			// + "\n\n");
-			// System.out.println("Predicted sentiment type:" +
-			// predictedSentiment);
+			if (predictedSentiment == 0) {
+				if (sumSentiment == 0)
+					predictedSentiment = 2;
+				else if (sumSentiment >= 0.75)
+					predictedSentiment = 4;
+				else if (sumSentiment < 0.75 && sumSentiment > 0.25)
+					// positive
+					predictedSentiment = 3;
+				else if (sumSentiment <= 0.25 && sumSentiment >= -0.25)
+					// neutral
+					predictedSentiment = 2;
+				else if (sumSentiment < -0.25 && sumSentiment >= -0.75)
+					// somewhat negative
+					predictedSentiment = 1;
+				else if (sumSentiment < -0.75)
+					// negative
+					predictedSentiment = 0;
+			}
 
 			if (predictedSentiment == expectedSentiment)
 				matchedCount++;
@@ -95,8 +96,8 @@ public class SentimentPrediction {
 			if (totalCount % 1000 == 0) {
 				System.out.println("Processed count: " + totalCount);
 				// write log
-				writeToFile(log.toString(), "trainig_output.txt");
-				log.setLength(0);
+				// writeToFile(log.toString(), "trainig_output_ngram.txt");
+				// log.setLength(0);
 			}
 
 			totalCount++;
@@ -114,8 +115,8 @@ public class SentimentPrediction {
 		System.out.println("Accuracy: " + accurarcy + " %");
 
 		// write log
-		writeToFile(log.toString(), "trainig_output.txt");
-		log.setLength(0);
+		// writeToFile(log.toString(), "trainig_output_ngram.txt");
+		// log.setLength(0);
 	}
 
 	public void doTesting() throws Exception {
@@ -139,6 +140,7 @@ public class SentimentPrediction {
 			int predictedSentiment = 0;
 			double sumSentiment = sentiwordNet.findSumSentiment(phrase);
 
+			int ngramCount = 0;
 			StringTokenizer tokenizer = new StringTokenizer(phrase);
 			while (tokenizer.hasMoreTokens()) {
 				String token = tokenizer.nextToken().trim();
@@ -150,25 +152,57 @@ public class SentimentPrediction {
 						// reverse the sentiment due to negation
 						sumSentiment = sumSentiment * -1;
 					}
+
+					ngramCount++;
 				}
 			}
 
-			if (sumSentiment == 0)
-				predictedSentiment = 2;
-			else if (sumSentiment >= 0.75)
-				predictedSentiment = 4;
-			else if (sumSentiment < 0.75 && sumSentiment > 0.25)
-				// positive
-				predictedSentiment = 3;
-			else if (sumSentiment <= 0.25 && sumSentiment >= -0.25)
-				// neutral
-				predictedSentiment = 2;
-			else if (sumSentiment < -0.25 && sumSentiment >= -0.75)
-				// somewhat negative
-				predictedSentiment = 1;
-			else if (sumSentiment < -0.75)
-				// negative
-				predictedSentiment = 0;
+			if (ngramCount <= 10) {
+				if ((sumSentiment > 0 && sumSentiment <= 0.5)
+						|| (sumSentiment < 0 && sumSentiment >= -0.5))
+					predictedSentiment = 2;
+			}
+
+			if (predictedSentiment == 0) {
+				if (sumSentiment == 0)
+					predictedSentiment = 2;
+				else if (sumSentiment >= 0.75)
+					predictedSentiment = 4;
+				else if (sumSentiment < 0.75 && sumSentiment > 0.25)
+					// positive
+					predictedSentiment = 3;
+				else if (sumSentiment <= 0.25 && sumSentiment >= -0.25)
+					// neutral
+					predictedSentiment = 2;
+				else if (sumSentiment < -0.25 && sumSentiment >= -0.75)
+					// somewhat negative
+					predictedSentiment = 1;
+				else if (sumSentiment < -0.75)
+					// negative
+					predictedSentiment = 0;
+			}
+
+			// if (ngramCount <= 5) {
+			// predictedSentiment = 2;
+			// } else if ((sumSentiment > 0 && sumSentiment <= 0.1)
+			// || (sumSentiment < 0 && sumSentiment >= -0.1))
+			// predictedSentiment = 2;
+			// else if (sumSentiment == 0)
+			// predictedSentiment = 2;
+			// else if (sumSentiment >= 0.75)
+			// predictedSentiment = 4;
+			// else if (sumSentiment < 0.75 && sumSentiment > 0.25)
+			// // positive
+			// predictedSentiment = 3;
+			// else if (sumSentiment <= 0.25 && sumSentiment >= -0.25)
+			// // neutral
+			// predictedSentiment = 2;
+			// else if (sumSentiment < -0.25 && sumSentiment >= -0.75)
+			// // somewhat negative
+			// predictedSentiment = 1;
+			// else if (sumSentiment < -0.75)
+			// // negative
+			// predictedSentiment = 0;
 
 			if (totalCount % 1000 == 0) {
 				System.out.println("Processed count: " + totalCount);

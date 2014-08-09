@@ -151,9 +151,9 @@ public class DatasetParser {
 
 						newString.append(token + " ");
 					}
-					System.out.println("Original: " + phrase);
+					// System.out.println("Original: " + phrase);
 					phrase = newString.toString();
-					System.out.println("Stemmed: " + phrase);
+					// System.out.println("Stemmed: " + phrase);
 
 					TestingDataEntry entry = new TestingDataEntry();
 					entry.setPhraseId(phraseId);
